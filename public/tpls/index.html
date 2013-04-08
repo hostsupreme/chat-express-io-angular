@@ -1,0 +1,49 @@
+<script id="ejs-chat-user" type="template/html">
+	<div class="one-user" data-id="<%= data.id %>" data-userdata="<%- data %>">
+		<div class="row">
+			<div class="span1">
+				<span class="fui-man-16"></span>
+			</div>					
+			<h5 class="span3">
+				
+			</h5>
+		</div>
+	</div>
+</script>
+
+<script id="ejs-chat-message" type="template/html">
+	<div class="one-message">
+		<div class="row">
+			<h5 class="span3">
+				
+			</h5>
+			<div class="span1">
+				<span class="fui-bubble-16"></span>
+			</div>
+			<div>
+				
+			</div>
+		</div>
+	</div>
+</script>	
+
+
+<script id="ejs-chat-login" type="template/html">
+	<div class="chat-login">
+		<div class="row">
+			<div class="span2 chat-title">
+				<h5 class="btn btn-large btn-block btn-primary" href="#">Login</h5>
+			</div>
+			<div class="span4 login-area">
+				<div class="row">						
+					<div class="span1"><span class="fui-man-16"></span></div>
+					<input class="span3" name="chat-username" type="text" placeholder="Username">
+				</div>
+				<div class="row">
+					<div class="span1"><span class="fui-lock-16"></span></div>
+					<input class="span3" name="chat-password" type="password" placeholder="">
+				</div>
+			</div>
+		</div>
+	</div>
+</script>	

@@ -1,0 +1,206 @@
+// functions
+
+vendor-prefixes ?= webkit moz o ms official
+
+support-for-ie ?= true
+
+clearfix()
+  &:before
+  &:after
+    content: ""
+    display: table
+  &:after
+    clear: both
+
+vendor(prop, args, only = null, ignore = null)
+  for prefix in vendor-prefixes
+    unless (only and !(prefix in only)) or (ignore and prefix in ignore)
+      if official == prefix
+        {prop}: args
+      else
+        newargs = args
+        // Adjusting the args if needed
+        if prop in ('transition' 'transition-property')
+          newargs = replace-args(args, transform, '-' + prefix + '-transform')
+        {'-' + prefix + '-' + prop}: newargs
+
+box-shadow()
+  vendor('box-shadow', arguments, only: webkit official)
+
+
+-apply-border-radius(pos, importance)
+  if length(pos) == 3
+    // border-radius: <top | buttom> <left | right> <n>
+    y = pos[0]
+    x = pos[1]
+    // We don't use moz for simple boder-radius anymore
+    // vendor('border-radius-%s%s' % pos, pos[2], only: moz)
+    vendor('border-%s-%s-radius' % pos, pos[2] importance, only: webkit official)
+  else if pos[0] in (top bottom)
+    // border-radius: <top | bottom> <n>
+    -apply-border-radius(pos[0] left pos[1], importance)
+    -apply-border-radius(pos[0] right pos[1], importance)
+  else if pos[0] in (left right)
+    // border-radius: <left | right> <n>
+    unshift(pos, top);
+    -apply-border-radius(pos, importance)
+    pos[0] = bottom
+    -apply-border-radius(pos, importance)
+
+/*
+ * border-radius supporting vendor prefixes and
+ * augmented behavior.
+ *
+ * Examples:
+ *
+ * border-radius: 2px 5px
+ * border-radius: top 5px bottom 10px
+ * border-radius: left 5px
+ * border-radius: top left 5px
+ * border-radius: top left 10px bottom right 5px
+ * border-radius: top left 10px, bottom right 5px
+ *
+ */
+border-radius()
+  pos = ()
+  augmented = false
+  importance = arguments[length(arguments) - 1] == !important ? !important : unquote('')
+
+  for args in arguments
+    for arg in args
+      if arg is a 'ident'
+        append(pos, arg)
+        augmented = true
+      else
+        append(pos, arg)
+        if augmented
+          -apply-border-radius(pos, importance)
+          pos = ()
+  vendor('border-radius', pos, only: webkit official) unless augmented
+
+
+opacity(n, args...)
+  opacity: n args
+  if support-for-ie
+    val = round(n * 100)
+    if val == 100
+      -ms-filter: none
+      filter: none
+    else
+      filter: 'alpha(opacity=%s)' % val args
+      -ms-filter: '"progid:DXImageTransform.Microsoft.Alpha(Opacity=%s)"' % val args
+
+add-arrow(position, color, size=unit(10,px))
+	position: relative
+	background-color: color
+	pos = position
+	arrowposition = 50%
+	marginsize = -1 * size
+
+	if length(position) > 1
+		pos = position[0]
+		arrowposition = position[1]		
+
+	&:after
+		border: solid transparent
+		content: " "
+		height: 0
+		width: 0
+		position: absolute
+		pointer-events: none
+		border-width: size
+		border-color: transparent
+		if pos == 'top'
+			bottom: 100%
+			left: arrowposition
+			margin-left: marginsize
+			border-bottom-color: color
+		else if pos == 'bottom'
+			top: 100%
+			left: arrowposition
+			margin-left: marginsize
+			border-top-color: color
+		else if pos == 'right'
+			left: 100%
+			top: arrowposition
+			margin-top: marginsize	
+			border-left-color: color
+		else
+			right: 100%
+			top: arrowposition
+			margin-top: marginsize
+			border-right-color: color
+	
+/*
+#box {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    display: block;        
+	background: rgba(135,224,253,1);
+    
+    transform: 
+        rotateY(30deg)
+        skew(0deg, 0deg)        
+        ;
+}
+
+#box:before {
+background: rgba(5,171,224,1);
+    
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    display: block;
+    transform-origin: right top;
+    transform: 
+        scale(1.0)
+        perspective(1000px)
+        rotateY(10deg)
+        skew(0deg, 20deg)
+        translate(200px)
+        ;
+}
+
+*/
+// stylez
+
+
+
+body
+	background-color: #ecf0f1
+	padding: 50px
+
+.chat
+	padding: 30px
+	background-color: #ffffff
+	border: 1px solid #bdc3c7
+	border-radius(4px)
+
+.chat-login 
+	width: 50%
+	margin: 0 auto
+
+	.chat-title
+		padding-right: 10px
+		text-align: right
+
+		h5
+			margin-top: 30%
+
+	.login-area 
+		padding: 10px
+		background-color: #ffffff
+		color: #2c3e50
+		border-radius(4px)
+		add-arrow(left 50%, #ffffff, 10px)
+		
+		.row div span
+			display: block
+			margin-left: 30%
+			margin-top: 20%
+		
+	
+	
+	
